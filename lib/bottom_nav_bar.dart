@@ -16,6 +16,8 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return NavigationBar(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      indicatorColor: Theme.of(context).colorScheme.primary,
       onDestinationSelected: (int index) {
         setState(() {
           currentPageIndex = index;
