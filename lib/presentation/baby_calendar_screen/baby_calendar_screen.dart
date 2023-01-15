@@ -1,3 +1,4 @@
+import 'package:baby_age/presentation/baby_calendar_screen/widget/date_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -12,7 +13,7 @@ class BabyCalendarScreen extends StatefulWidget {
 }
 
 class _BabyCalendarScreenState extends State<BabyCalendarScreen> {
-  var firstDay = DateTime.utc(2022, 11, 2);
+  var firstDay = DateTime.utc(2022, 11, 1);
   var lastDay = DateTime.utc(2023, 8, 30);
   var currentDay = DateTime.now();
   var focusedDay = DateTime.now();
@@ -32,6 +33,9 @@ class _BabyCalendarScreenState extends State<BabyCalendarScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SelectedDateView(
+              startDate: firstDay,
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 16.0, top: 16.0),
               child: Text(
