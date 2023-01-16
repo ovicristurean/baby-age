@@ -3,8 +3,18 @@ import 'package:flutter/material.dart';
 
 class SelectedDateView extends StatelessWidget {
   final DateTime startDate;
+  final Function(DateTime) onStartDateChanged;
 
-  const SelectedDateView({Key? key, required this.startDate}) : super(key: key);
+  SelectedDateView(
+      {Key? key, required this.startDate, required this.onStartDateChanged})
+      : super(key: key);
+
+  late DateTime selectedDate;
+
+  @override
+  void initState() {
+    selectedDate = startDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +30,24 @@ class SelectedDateView extends StatelessWidget {
           ElevatedButton(
             child: const Text('Change'),
             onPressed: () {
-              showDatePicker(
-                context: context,
-                initialDate: startDate,
-                firstDate: startDate,
-                lastDate: startDate.add(const Duration(days: 280)),
-              );
+              onChangeButtonPressed(context);
             },
           ),
         ],
       ),
     );
+  }
+
+  void onChangeButtonPressed(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: startDate,
+      firstDate: startDate.subtract(const Duration(days: 280)),
+      lastDate: startDate.add(const Duration(days: 280)),
+    );
+
+    if (picked != null && picked != startDate) {
+      onStartDateChanged(picked);
+    }
   }
 }

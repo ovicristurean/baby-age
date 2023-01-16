@@ -1,5 +1,7 @@
+import 'package:baby_age/domain/model/date_info.dart';
 import 'package:baby_age/presentation/baby_calendar_screen/widget/date_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class BabyCalendarScreen extends StatefulWidget {
@@ -13,10 +15,20 @@ class BabyCalendarScreen extends StatefulWidget {
 }
 
 class _BabyCalendarScreenState extends State<BabyCalendarScreen> {
-  var firstDay = DateTime.utc(2022, 11, 1);
-  var lastDay = DateTime.utc(2023, 8, 30);
+  late DateTime firstDay;
+  late DateTime lastDay;
   var currentDay = DateTime.now();
   var focusedDay = DateTime.now();
+
+  @override
+  void initState() {
+    getSavedStartDate().then((value) {
+      setState(() {
+        firstDay = DateTime(value.year, value.month, value.day);
+        lastDay = firstDay.add(const Duration(days: 280));
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,30 +47,31 @@ class _BabyCalendarScreenState extends State<BabyCalendarScreen> {
           children: [
             SelectedDateView(
               startDate: firstDay,
+              onStartDateChanged: (newDate) {
+                updateStartDate(newDate);
+                setState(() {
+                  firstDay = newDate;
+                  lastDay = newDate.add(const Duration(days: 280));
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Pregnancy start date successfuly updated")));
+              },
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0, top: 16.0),
-              child: Text(
-                "Current pregnancy status: $currentProgress",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontWeight: FontWeight.bold,
-                    ),
-                textAlign: TextAlign.center,
-              ),
+            Text(
+              "Current pregnancy status: $currentProgress",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onBackground,
+                    fontWeight: FontWeight.bold,
+                  ),
+              textAlign: TextAlign.center,
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 16.0, top: 16.0),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Text(
-                  "Trimester ${calculateTrimester(currentPregnancyDuration.inDays)}",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ),
+            Text(
+              "Trimester ${calculateTrimester(currentPregnancyDuration.inDays)}",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onBackground,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             TableCalendar(
               firstDay: firstDay,
@@ -136,5 +149,16 @@ class _BabyCalendarScreenState extends State<BabyCalendarScreen> {
           return Colors.transparent;
         }
     }
+  }
+
+  void updateStartDate(DateTime date) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(
+        "start_date", DateInfo(date.year, date.month, date.day).toJsonString());
+  }
+
+  Future<DateInfo> getSavedStartDate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return DateInfo.fromJson(prefs.getString("start_date"));
   }
 }
