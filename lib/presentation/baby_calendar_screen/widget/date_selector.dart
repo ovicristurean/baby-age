@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 
 class SelectedDateView extends StatelessWidget {
   final DateTime startDate;
+  final DateTime endDate;
   final Function(DateTime) onStartDateChanged;
 
   SelectedDateView(
-      {Key? key, required this.startDate, required this.onStartDateChanged})
+      {Key? key,
+      required this.startDate,
+      required this.onStartDateChanged,
+      required this.endDate})
       : super(key: key);
 
   late DateTime selectedDate;
@@ -42,8 +46,8 @@ class SelectedDateView extends StatelessWidget {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: startDate,
-      firstDate: startDate.subtract(const Duration(days: 280)),
-      lastDate: startDate.add(const Duration(days: 280)),
+      firstDate: startDate.subtract(const Duration(days: 279)),
+      lastDate: DateTime.now(),
     );
 
     if (picked != null && picked != startDate) {

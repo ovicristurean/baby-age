@@ -10,7 +10,7 @@ class DateInfo extends Equatable {
   @override
   List<Object?> get props => [year, month, day];
 
-  const DateInfo(this.year, this.month, this.day);
+  const DateInfo({required this.year, required this.month, required this.day});
 
   Map<String, dynamic> toJson() => {'year': year, 'month': month, 'day': day};
 
@@ -22,7 +22,10 @@ class DateInfo extends Equatable {
     return json != null
         ? DateInfo.fromMap(jsonDecode(json) as Map<String, dynamic>)
         : DateInfo(
-            DateTime.now().year, DateTime.now().month, DateTime.now().day);
+            year: DateTime.now().year,
+            month: DateTime.now().month,
+            day: DateTime.now().day,
+          );
   }
 
   Map<String, dynamic> toMap() {
@@ -33,11 +36,13 @@ class DateInfo extends Equatable {
     };
   }
 
+  DateTime toDateTime() => DateTime(year, month, day);
+
   factory DateInfo.fromMap(Map<String, dynamic> map) {
     return DateInfo(
-      map['year'] as int,
-      map['month'] as int,
-      map['day'] as int,
+      year: map['year'] as int,
+      month: map['month'] as int,
+      day: map['day'] as int,
     );
   }
 }
